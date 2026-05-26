@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: CyberPizza Bot API
+  description: |
+    ### Интерактивная документация REST API для интеграции Telegram-бота с системой управления заказами пиццерии.
+    *Минимум воды — максимум жесткой логики.*
+  version: 1.0.0
+  contact:
+    name: Савва Морозов (TechWriter.PRO)
+    url: https://techwriterpro.github.io/
+servers:
+  - url: https://api.cyberpizza.pro/v1
+    description: Продуктовый сервер (Production)
+
+paths:
+  /menu:
+    get:
+      summary: Получить актуальное меню пиццерии
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pizza
+      responses:
+        '200':
+          description: Успешное получение списка меню
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+
+  /orders:
+    post:
+      summary: Создать новый заказ из Telegram-бота
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Заказ успешно создан
+
+components:
+  schemas:
+    MenuItem:
+      type: object
+      required: [id, name, price]
+      properties:
+        id:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: "Пицца Мясная Кибер-Мясо"
+        price:
+          type: number
+          example: 650.00
+
+    OrderInput:
+      type: object
+      required: [tg_user_id, items, delivery_address]
+      properties:
+        tg_user_id:
+          type: integer
+          example: 554321098
+        delivery_address:
+          type: string
+          example: "г. Москва, ул. Пушкина, д. 10"
+        items:
+          type: array
+          items:
+            type: integer
+          example: [101, 101]
